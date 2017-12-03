@@ -1,0 +1,19 @@
+Manifest-Version: 1.0
+Archiver-Version: Plexus Archiver
+Created-By: Apache Maven
+Built-By: chris
+Build-Jdk: 1.6.0_26
+Extension-Name: gcm-notification
+Implementation-Title: gcm-notification
+Implementation-Version: 1.0
+Group-Id: org.jenkins-ci.plugins
+Short-Name: gcm-notification
+Long-Name: Google Cloud Messsaging Notification Plugin
+Url: http://wiki.jenkins-ci.org/display/JENKINS/GCM+Notification+Plugin
+Plugin-Version: 1.0
+Hudson-Version: 1.466
+Jenkins-Version: 1.466
+Plugin-Dependencies: instant-messaging:1.23,analysis-core:1.0;resoluti
+ on:=optional,jquery:1.7.2-1,ci-game:1.16;resolution:=optional
+Plugin-Developers: Christopher Orr:orrc:chris@orr.me.uk
+
