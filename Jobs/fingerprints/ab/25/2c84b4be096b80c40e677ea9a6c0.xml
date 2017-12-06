@@ -1,0 +1,17 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<fingerprint>
+  <timestamp>2017-11-25 15:25:36.991 UTC</timestamp>
+  <md5sum>ab252c84b4be096b80c40e677ea9a6c0</md5sum>
+  <fileName>Credential id=80763e64-4111-4d8e-8539-ce6fdd648199 name=philipjohnsolomon/******</fileName>
+  <usages>
+    <entry>
+      <string>DevOps Setup</string>
+      <ranges>35-54</ranges>
+    </entry>
+    <entry>
+      <string>Test</string>
+      <ranges>1</ranges>
+    </entry>
+  </usages>
+  <facets/>
+</fingerprint>
