@@ -1,0 +1,350 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<project>
+  <actions/>
+  <description>DevOps Setup for AgencyPortal</description>
+  <keepDependencies>false</keepDependencies>
+  <properties>
+    <jenkins.model.BuildDiscarderProperty>
+      <strategy class="hudson.tasks.LogRotator">
+        <daysToKeep>30</daysToKeep>
+        <numToKeep>-1</numToKeep>
+        <artifactDaysToKeep>-1</artifactDaysToKeep>
+        <artifactNumToKeep>-1</artifactNumToKeep>
+      </strategy>
+    </jenkins.model.BuildDiscarderProperty>
+  </properties>
+  <scm class="hudson.plugins.git.GitSCM" plugin="git@3.6.4">
+    <configVersion>2</configVersion>
+    <userRemoteConfigs>
+      <hudson.plugins.git.UserRemoteConfig>
+        <url>https://403392@code.cognizant.com/AgencyPortal/AgencyPortal_Demo_Suit.git</url>
+        <credentialsId>42155ccf-7196-428b-bb6f-9c48d72bb55e</credentialsId>
+      </hudson.plugins.git.UserRemoteConfig>
+    </userRemoteConfigs>
+    <branches>
+      <hudson.plugins.git.BranchSpec>
+        <name>*/master</name>
+      </hudson.plugins.git.BranchSpec>
+    </branches>
+    <doGenerateSubmoduleConfigurations>false</doGenerateSubmoduleConfigurations>
+    <submoduleCfg class="list"/>
+    <extensions>
+      <hudson.plugins.git.extensions.impl.AuthorInChangelog/>
+    </extensions>
+  </scm>
+  <canRoam>true</canRoam>
+  <disabled>false</disabled>
+  <blockBuildWhenDownstreamBuilding>false</blockBuildWhenDownstreamBuilding>
+  <blockBuildWhenUpstreamBuilding>false</blockBuildWhenUpstreamBuilding>
+  <triggers>
+    <hudson.triggers.SCMTrigger>
+      <spec>H 9-16/1 * * 1-7</spec>
+      <ignorePostCommitHooks>false</ignorePostCommitHooks>
+    </hudson.triggers.SCMTrigger>
+  </triggers>
+  <concurrentBuild>false</concurrentBuild>
+  <builders>
+    <hudson.tasks.Ant plugin="ant@1.7">
+      <targets>package</targets>
+      <antName>ANT</antName>
+    </hudson.tasks.Ant>
+    <hudson.tasks.BatchFile>
+      <command>xcopy &quot;C:\Program Files (x86)\Jenkins\workspace\Test\build\dist\agencyportal.war&quot; &quot;E:\DevOps\Tomcat\apache-tomcat-8.0.47\webapps&quot; /C /H /R /Y&#xd;
+E:\DevOps\Tomcat\apache-tomcat-8.0.47\bin\startup.bat</command>
+    </hudson.tasks.BatchFile>
+    <hudson.tasks.BatchFile>
+      <command>java -jar selenium-server-standalone-3.8.1.jar -htmlSuite &quot;*chrome&quot; &quot;http://localhost&quot; &quot;C:\Users\John\Desktop\SE\Login.html&quot; &quot;C:\Users\John\Desktop\SE\results.html&quot;</command>
+    </hudson.tasks.BatchFile>
+  </builders>
+  <publishers>
+    <hudson.tasks.junit.JUnitResultArchiver plugin="junit@1.21">
+      <testResults>build/report/*.xml</testResults>
+      <keepLongStdio>false</keepLongStdio>
+      <healthScaleFactor>1.0</healthScaleFactor>
+      <allowEmptyResults>true</allowEmptyResults>
+    </hudson.tasks.junit.JUnitResultArchiver>
+    <hudson.plugins.jacoco.JacocoPublisher plugin="jacoco@2.2.1">
+      <execPattern>build/temp/WEB-INF/classes/jacoco.exec</execPattern>
+      <classPattern>build/temp/WEB-INF/classes</classPattern>
+      <sourcePattern>Java Source</sourcePattern>
+      <inclusionPattern></inclusionPattern>
+      <exclusionPattern>**/*Test*.class</exclusionPattern>
+      <skipCopyOfSrcFiles>false</skipCopyOfSrcFiles>
+      <minimumInstructionCoverage>0</minimumInstructionCoverage>
+      <minimumBranchCoverage>0</minimumBranchCoverage>
+      <minimumComplexityCoverage>0</minimumComplexityCoverage>
+      <minimumLineCoverage>0</minimumLineCoverage>
+      <minimumMethodCoverage>0</minimumMethodCoverage>
+      <minimumClassCoverage>0</minimumClassCoverage>
+      <maximumInstructionCoverage>0</maximumInstructionCoverage>
+      <maximumBranchCoverage>0</maximumBranchCoverage>
+      <maximumComplexityCoverage>0</maximumComplexityCoverage>
+      <maximumLineCoverage>0</maximumLineCoverage>
+      <maximumMethodCoverage>0</maximumMethodCoverage>
+      <maximumClassCoverage>0</maximumClassCoverage>
+      <changeBuildStatus>false</changeBuildStatus>
+      <deltaInstructionCoverage>0</deltaInstructionCoverage>
+      <deltaBranchCoverage>0</deltaBranchCoverage>
+      <deltaComplexityCoverage>0</deltaComplexityCoverage>
+      <deltaLineCoverage>0</deltaLineCoverage>
+      <deltaMethodCoverage>0</deltaMethodCoverage>
+      <deltaClassCoverage>0</deltaClassCoverage>
+      <buildOverBuild>false</buildOverBuild>
+    </hudson.plugins.jacoco.JacocoPublisher>
+    <hudson.plugins.emailext.ExtendedEmailPublisher plugin="email-ext@2.61">
+      <recipientList>philipjohnsolomon@gmail.com;philipjohnsolomon.r@cognizant.com</recipientList>
+      <configuredTriggers>
+        <hudson.plugins.emailext.plugins.trigger.AlwaysTrigger>
+          <email>
+            <subject>$PROJECT_DEFAULT_SUBJECT</subject>
+            <body>$PROJECT_DEFAULT_CONTENT</body>
+            <recipientProviders>
+              <hudson.plugins.emailext.plugins.recipients.DevelopersRecipientProvider/>
+              <hudson.plugins.emailext.plugins.recipients.ListRecipientProvider/>
+            </recipientProviders>
+            <attachmentsPattern></attachmentsPattern>
+            <attachBuildLog>false</attachBuildLog>
+            <compressBuildLog>false</compressBuildLog>
+            <replyTo>$PROJECT_DEFAULT_REPLYTO</replyTo>
+            <contentType>project</contentType>
+          </email>
+        </hudson.plugins.emailext.plugins.trigger.AlwaysTrigger>
+      </configuredTriggers>
+      <contentType>text/html</contentType>
+      <defaultSubject>$BUILD_TAG $BUILD_STATUS </defaultSubject>
+      <defaultContent>&lt;STYLE&gt;
+   BODY, TABLE, TD, TH, P {
+   font-family:Verdana,Helvetica,sans serif;
+   font-size:11px;
+   color:black;
+   }
+   h1 { color:black; }
+   h2 { color:black; }
+   h3 { color:black; }
+   TD.bg1 { color:white; background-color:#595959; font-size:120% }
+   TD.bg2 { color:white; background-color:#4040FF; font-size:110% }
+   TD.bg3 { color:white; background-color:#8080FF; }
+   TD.test_passed { color:#ccc; }
+   TD.test_failed { color:red; }
+   TD.console { font-family:Courier New, Lucida Console; }
+&lt;/STYLE&gt;
+&lt;BODY&gt;
+   &lt;TABLE&gt;
+      &lt;TR&gt;
+         &lt;TD align=&quot;left&quot;&gt;
+            &lt;IMG SRC=&quot;http://localhost:9090/static/eb749496/images/headshot.png&quot;/&gt;
+         &lt;/TD&gt;
+         &lt;TD valign=&quot;center&quot;&gt;
+            &lt;B style=&quot;font-size: 200%;&quot;&gt;Jenkins Build Results&lt;/B&gt;
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD&gt;JOB NAME/URL&lt;/TD&gt;
+         &lt;TD&gt;
+            &lt;A href=&quot;${BUILD_URL}&quot;&gt;${JOB_NAME}&lt;/A&gt;
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD&gt;BUILD STATUS:&lt;/TD&gt;
+         &lt;TD&gt;${BUILD_STATUS}!&lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD&gt;BUILD-NUMBER:&lt;/TD&gt;
+         &lt;TD&gt;${BUILD_DISPLAY_NAME}&lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD&gt;DATE/TIME:&lt;/TD&gt;
+         &lt;TD&gt;${BUILD_TIMESTAMP}&lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD&gt;TRIGGER:&lt;/TD&gt;
+         &lt;TD&gt;${BUILD_CAUSE}&lt;/TD&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;BR/&gt;
+   &lt;!-- CHANGE SET --&gt;
+   &lt;TABLE width=&quot;100%&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD class=&quot;bg1&quot; colspan=&quot;2&quot;&gt;
+            &lt;B&gt;CHANGES&lt;/B&gt;			
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD colspan=&quot;2&quot;&gt;
+            &lt;br/&gt;
+            Git Branch: $GIT_BRANCH&lt;br/&gt;
+			Git ChnageLog: ${CHANGES, showPaths=true, format=&quot;%a: %r %p \n--\&quot;%m\&quot;&quot;, pathFormat=&quot;\n\t- %p&quot;}&lt;br/&gt;
+            &lt;a href=&quot;https://code.cognizant.com/AgencyPortal/AgencyPortal_Demo_Suit/commit/$GIT_COMMIT&quot;&gt;Git Commit Reference&lt;/a&gt;
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;BR/&gt;
+   &lt;!-- ARTIFACTS --&gt;
+   &lt;TABLE width=&quot;100%&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD class=&quot;bg1&quot;&gt;
+            &lt;B&gt;BUILD ARTIFACTS&lt;/B&gt;
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD&gt;
+            &lt;br/&gt;
+           &lt;A href=&quot;${BUILD_URL}/testReport/&quot;&gt;Junit Test Report&lt;/A&gt;
+            &lt;br/&gt;
+             &lt;A href=&quot;${BUILD_URL}/jacoco/&quot;&gt;Jacoco Code Coverage Report&lt;/A&gt;
+            &lt;br&gt;
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;BR/&gt;
+   &lt;!-- JUnit TEMPLATE --&gt;
+   &lt;!-- ARTIFACTS --&gt;
+   &lt;TABLE width=&quot;100%&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD class=&quot;bg1&quot;&gt;
+            &lt;B&gt;UNIT TEST RESULTS&lt;/B&gt;
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;BR/&gt;
+   &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD BGCOLOR=&quot;#0099CC&quot; width=&quot;50%&quot; height=&quot;30px&quot;&gt;
+            &lt;FONT COLOR=White FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;  Total&lt;/font&gt;
+         &lt;/td&gt;
+         &lt;TD BGCOLOR=&quot;#FFFFFF&quot;&gt;
+            &lt;FONT COLOR=#0099CC FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;${TEST_COUNTS,var=&quot;total&quot;}&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD BGCOLOR=&quot;#04B431&quot; width=&quot;50%&quot;&gt;
+            &lt;FONT COLOR=white FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;  Pass&lt;/font&gt;
+         &lt;/td&gt;
+         &lt;TD BGCOLOR=&quot;#FFFFFF&quot;&gt;
+            &lt;FONT COLOR=#04B431 FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;${TEST_COUNTS,var=&quot;pass&quot;}&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD BGCOLOR=&quot;#DF3A01&quot; width=&quot;50%&quot;&gt;
+            &lt;FONT COLOR=white FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;  Fail&lt;/font&gt;
+         &lt;/td&gt;
+         &lt;TD BGCOLOR=&quot;#FFFFFF&quot;&gt;
+            &lt;FONT COLOR=#DF3A01 FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;${TEST_COUNTS,var=&quot;fail&quot;}&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD BGCOLOR=&quot;#e6e600&quot; width=&quot;50%&quot;&gt;
+            &lt;FONT COLOR=white FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;  Skip&lt;/font&gt;
+         &lt;/td&gt;
+         &lt;TD BGCOLOR=&quot;#FFFFFF&quot;&gt;
+            &lt;FONT COLOR=#A4A4A4 FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;${TEST_COUNTS,var=&quot;skip&quot;}&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;br/&gt;
+   &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR  BGCOLOR=&quot;#989898&quot; width=&quot;100%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT COLOR=White FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;Unit Test  Failure Analysis&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+      &lt;TR width=&quot;100%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT FACE=&quot;Courier New, Lucida Console&quot; SIZE=2&gt;${FAILED_TESTS, showStack=false}&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;br/&gt;
+  &lt;!-- &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR  BGCOLOR=&quot;#989898&quot; width=&quot;70%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT COLOR=White FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;View Unit Test Report&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+      &lt;TR  width=&quot;70%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;
+            &lt;a href=&quot;${JOB_URL}lastBuild/testReport/&quot;&gt;Click here to view&lt;/a&gt;
+            &lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt; --&gt;
+&lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR  BGCOLOR=&quot;#989898&quot; width=&quot;70%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT COLOR=White FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;Sonar Qube Analysis&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+      &lt;TR  width=&quot;70%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;
+            &lt;a href=&quot;http://localhost:9000/dashboard?id=org.sonarqube%3Asonarqube-scanner-ant&quot;&gt;Click here to view&lt;/a&gt;
+            &lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;br/&gt;
+   &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR  BGCOLOR=&quot;#989898&quot; width=&quot;100%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT COLOR=White FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;Unit Test Trend Graph&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+      &lt;TR width=&quot;70%&quot;&gt;
+         &lt;td&gt;
+			&lt;a href=&quot;${JOB_URL}lastBuild/testReport/&quot;&gt;
+            &lt;img src=&quot;${JOB_URL}/test/trend?width=600&amp;amp;amp;height=400&amp;amp;amp;failureOnly=false&quot; alt=&quot;Trend Graph - Enable Email Images To View&quot; lazymap=&quot;trendMap?rel=../&amp;amp;width=600&amp;amp;amp;height=400&amp;amp;amp;failureOnly=false&quot; usemap=&quot;#map0&quot;&gt;
+			&lt;/a&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;TABLE BORDER=0 CELLSPACING=2 CELLPADDING=2 Width=&quot;100%&quot;&gt;
+      &lt;TR  BGCOLOR=&quot;#989898&quot; width=&quot;100%&quot;&gt;
+         &lt;td&gt;
+            &lt;FONT COLOR=White FACE=&quot;Geneva, Arial&quot; SIZE=2&gt;Code Coverage&lt;/font&gt;
+         &lt;/td&gt;
+      &lt;/TR&gt;
+      &lt;TR width=&quot;70%&quot;&gt;
+         &lt;td&gt;
+            &lt;a href=&quot;${JOB_URL}/jacoco/&quot;&gt;
+            &lt;img src=&quot;${JOB_URL}/jacoco/graph&quot;&gt;
+            &lt;/a&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;BR/&gt;
+   &lt;!-- CONSOLE OUTPUT --&gt;
+   &lt;TABLE width=&quot;100%&quot; cellpadding=&quot;0&quot; cellspacing=&quot;0&quot;&gt;
+      &lt;TR&gt;
+         &lt;TD class=&quot;bg1&quot;&gt;
+            &lt;B&gt;CONSOLE OUTPUT&lt;/B&gt;
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+      &lt;TR&gt;
+         &lt;TD class=&quot;console&quot; width=&quot;80%&quot;&gt;
+            &lt;br/&gt;
+            ${BUILD_LOG_REGEX, regex=&quot;^.*&quot;, linesAfter=1, substText=&quot;&lt;br&gt;$0&quot;}
+         &lt;/TD&gt;
+      &lt;/TR&gt;
+   &lt;/TABLE&gt;
+   &lt;BR/&gt;
+&lt;/BODY&gt;</defaultContent>
+      <attachmentsPattern></attachmentsPattern>
+      <presendScript>$DEFAULT_PRESEND_SCRIPT</presendScript>
+      <postsendScript>$DEFAULT_POSTSEND_SCRIPT</postsendScript>
+      <attachBuildLog>true</attachBuildLog>
+      <compressBuildLog>true</compressBuildLog>
+      <replyTo>philipjohnsolomon@gmail.com</replyTo>
+      <saveOutput>false</saveOutput>
+      <disabled>false</disabled>
+    </hudson.plugins.emailext.ExtendedEmailPublisher>
+  </publishers>
+  <buildWrappers>
+    <hudson.plugins.sonar.SonarBuildWrapper plugin="sonar@2.6.1"/>
+  </buildWrappers>
+</project>
